@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -26,5 +27,10 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ],
         );
+
+        // お問い合わせのダミーデータ（初回のみ・既にデータがあれば再投入しない）
+        if (Contact::count() === 0) {
+            $this->call(ContactSeeder::class);
+        }
     }
 }
