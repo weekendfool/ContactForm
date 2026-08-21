@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Enums\ContactStatus;
 use App\Models\Contact;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,7 +16,8 @@ class ContactStatusTest extends TestCase
     {
         Contact::factory()->count(3)->create();
 
-        $response = $this->get(route('admin.contacts.index'));
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('admin.contacts.index'));
 
         $response->assertStatus(200);
     }
@@ -24,7 +26,8 @@ class ContactStatusTest extends TestCase
     {
         $contact = Contact::factory()->create();
 
-        $response = $this->get(route('admin.contacts.show', $contact));
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('admin.contacts.show', $contact));
 
         $response->assertStatus(200);
         $response->assertSee($contact->subject);
@@ -34,9 +37,10 @@ class ContactStatusTest extends TestCase
     {
         $contact = Contact::factory()->create(['status' => ContactStatus::New]);
 
-        $response = $this->patch(route('admin.contacts.update', $contact), [
-            'status' => ContactStatus::InProgress->value,
-        ]);
+        $response = $this->actingAs(User::factory()->create())
+            ->patch(route('admin.contacts.update', $contact), [
+                'status' => ContactStatus::InProgress->value,
+            ]);
 
         $response->assertRedirect(route('admin.contacts.show', $contact));
         $this->assertDatabaseHas('contacts', [
@@ -49,14 +53,22 @@ class ContactStatusTest extends TestCase
     {
         $contact = Contact::factory()->create();
 
-        $response = $this->patch(route('admin.contacts.update', $contact), [
-            'status' => 'unknown_status',
-        ]);
+        $response = $this->actingAs(User::factory()->create())
+            ->patch(route('admin.contacts.update', $contact), [
+                'status' => 'unknown_status',
+            ]);
 
         $response->assertSessionHasErrors(['status']);
         $this->assertDatabaseHas('contacts', [
             'id' => $contact->id,
             'status' => 'new',
         ]);
+    }
+
+    public function test_未ログインでは一覧にアクセスできずログイン画面へリダイレクトされる(): void
+    {
+        $response = $this->get(route('admin.contacts.index'));
+
+        $response->assertRedirect(route('login'));
     }
 }

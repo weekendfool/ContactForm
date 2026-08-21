@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,8 +15,17 @@ Route::post('/contact/confirm', [ContactController::class, 'confirm'])->name('co
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 Route::get('/contact/complete', [ContactController::class, 'complete'])->name('contact.complete');
 
-// 管理ページ（一覧 → 詳細 → ステータス変更）
-Route::prefix('admin')->name('admin.')->group(function () {
+// 管理者ログイン
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'create'])->name('login');
+    Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+});
+Route::post('/logout', [LoginController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');
+
+// 管理ページ（一覧 → 詳細 → ステータス変更）※要ログイン
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/contacts', [AdminContactController::class, 'index'])->name('contacts.index');
     Route::get('/contacts/{contact}', [AdminContactController::class, 'show'])->name('contacts.show');
     Route::patch('/contacts/{contact}', [AdminContactController::class, 'update'])->name('contacts.update');

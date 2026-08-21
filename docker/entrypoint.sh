@@ -18,5 +18,8 @@ fi
 # マイグレーション実行（既に適用済みのものはスキップされる）
 php artisan migrate --force
 
+# 管理者用の初期アカウントを作成（既に存在すれば更新のみ）
+php artisan db:seed --force
+
 # 開発サーバーを0.0.0.0で起動し、コンテナ外（ホスト）からアクセスできるようにする
 exec php artisan serve --host=0.0.0.0 --port=8000

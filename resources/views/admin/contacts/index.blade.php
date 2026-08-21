@@ -3,7 +3,13 @@
 @section('title', 'お問い合わせ一覧')
 
 @section('content')
-    <h1>お問い合わせ一覧</h1>
+    <div class="top-bar">
+        <h1>お問い合わせ一覧</h1>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="btn btn-secondary">ログアウト</button>
+        </form>
+    </div>
 
     <table>
         <thead>

@@ -33,6 +33,7 @@
             }
             input[type="text"],
             input[type="email"],
+            input[type="password"],
             textarea,
             select {
                 width: 100%;
@@ -107,6 +108,14 @@
             }
             a {
                 color: #292524;
+            }
+            .top-bar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .top-bar h1 {
+                margin: 0;
             }
         </style>
     </head>
