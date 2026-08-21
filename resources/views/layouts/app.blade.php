@@ -117,6 +117,28 @@
             .top-bar h1 {
                 margin: 0;
             }
+            .filter-form {
+                background-color: #f5f5f4;
+                border: 1px solid #e7e5e4;
+                border-radius: 0.25rem;
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            .filter-fields {
+                display: flex;
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+            .filter-fields > div {
+                flex: 1;
+                min-width: 160px;
+            }
+            .filter-fields label {
+                margin-top: 0;
+            }
+            .filter-form .actions {
+                margin-top: 1rem;
+            }
         </style>
     </head>
     <body>

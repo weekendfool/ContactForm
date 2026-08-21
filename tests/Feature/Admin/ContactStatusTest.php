@@ -71,4 +71,54 @@ class ContactStatusTest extends TestCase
 
         $response->assertRedirect(route('login'));
     }
+
+    public function test_対応状況で絞り込める(): void
+    {
+        Contact::factory()->create(['name' => '新規太郎', 'status' => ContactStatus::New]);
+        Contact::factory()->create(['name' => '対応中花子', 'status' => ContactStatus::InProgress]);
+
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('admin.contacts.index', ['status' => 'in_progress']));
+
+        $response->assertStatus(200);
+        $response->assertSee('対応中花子');
+        $response->assertDontSee('新規太郎');
+    }
+
+    public function test_キーワードで名前を絞り込める(): void
+    {
+        Contact::factory()->create(['name' => '山田太郎']);
+        Contact::factory()->create(['name' => '鈴木花子']);
+
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('admin.contacts.index', ['keyword' => '山田']));
+
+        $response->assertStatus(200);
+        $response->assertSee('山田太郎');
+        $response->assertDontSee('鈴木花子');
+    }
+
+    public function test_キーワードで件名を絞り込める(): void
+    {
+        Contact::factory()->create(['name' => '田中一郎', 'subject' => '返品について']);
+        Contact::factory()->create(['name' => '佐藤次郎', 'subject' => '配送状況について']);
+
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('admin.contacts.index', ['keyword' => '返品']));
+
+        $response->assertStatus(200);
+        $response->assertSee('田中一郎');
+        $response->assertDontSee('佐藤次郎');
+    }
+
+    public function test_条件に一致しない場合は該当なしメッセージが表示される(): void
+    {
+        Contact::factory()->create(['name' => '山田太郎']);
+
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('admin.contacts.index', ['keyword' => '存在しない名前']));
+
+        $response->assertStatus(200);
+        $response->assertSee('条件に一致するお問い合わせはありません。');
+    }
 }

@@ -11,6 +11,28 @@
         </form>
     </div>
 
+    <form method="GET" action="{{ route('admin.contacts.index') }}" class="filter-form">
+        <div class="filter-fields">
+            <div>
+                <label for="status">対応状況</label>
+                <select id="status" name="status">
+                    <option value="">すべて</option>
+                    @foreach ($statuses as $s)
+                        <option value="{{ $s->value }}" @selected($status === $s->value)>{{ $s->label() }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label for="keyword">キーワード（お名前・件名）</label>
+                <input type="text" id="keyword" name="keyword" value="{{ $keyword }}" placeholder="例: 返品、山田">
+            </div>
+        </div>
+        <div class="actions">
+            <button type="submit">絞り込む</button>
+            <a class="btn btn-secondary" href="{{ route('admin.contacts.index') }}">クリア</a>
+        </div>
+    </form>
+
     <table>
         <thead>
             <tr>
@@ -30,7 +52,13 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4">お問い合わせはまだありません。</td>
+                    <td colspan="4">
+                        @if ($status !== '' || $keyword !== '')
+                            条件に一致するお問い合わせはありません。
+                        @else
+                            お問い合わせはまだありません。
+                        @endif
+                    </td>
                 </tr>
             @endforelse
         </tbody>
